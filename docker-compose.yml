@@ -8,6 +8,8 @@ networks:
 volumes:
   mysql:
     driver: ${VOLUMES_DRIVER}
+  redis:
+    driver: ${VOLUMES_DRIVER}
   mongo:
     driver: ${VOLUMES_DRIVER}
   phpmyadmin:
@@ -153,6 +155,7 @@ services:
         - "${WORKSPACE_VUE_CLI_UI_HOST_PORT}:8000"
         - "${WORKSPACE_ANGULAR_CLI_SERVE_HOST_PORT}:4200"
         - "${WORKSPACE_VITE_PORT}:5173"
+        - "3003:3003"
       tty: true
       environment:
         - PHP_IDE_CONFIG=${PHP_IDE_CONFIG}
@@ -418,5 +421,16 @@ services:
         - docker-in-docker:/certs/client
       expose:
         - 2375
+      networks:
+        - backend
+
+### Redis ################################################
+    redis:
+      build: ./redis
+      volumes:
+        - ${DATA_PATH_HOST}/redis:/data
+      command: --requirepass ${REDIS_PASSWORD}
+      ports:
+        - "${REDIS_PORT}:6379"
       networks:
         - backend
